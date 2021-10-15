@@ -1,4 +1,4 @@
-package main
+package network
 
 import (
     "fmt"
@@ -20,7 +20,7 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Hello astaxie!") //這個寫入到 w 的是輸出到客戶端的
 }
 
-func main() {
+func Network() {
     http.HandleFunc("/", sayhelloName) //設定存取的路由
     err := http.ListenAndServe(":9090", nil) //設定監聽的埠
     if err != nil {
