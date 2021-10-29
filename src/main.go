@@ -45,5 +45,45 @@ func main(){
         ctx.Writef("Hello %s %s", firstname, lastname)
     })
 
+    //建立 POST localhost:8090/form_post 路徑
+    app.Post("/form_post", func(ctx iris.Context) {
+        message := ctx.PostValue("message")
+        nick := ctx.PostValueDefault("nick", "anonymous")
 
+        ctx.JSON(iris.Map{
+            "nick":    nick,
+            "message": message,
+            "status":  "posted",
+
+        })
+    })
+
+    //群組路徑 localhost:8090/v1/loginApp or /loginApp2
+    //並送入對應 func
+    v1 := app.Party("/v1")
+    {
+        v1.Post("/loginApp", loginEndpoint)
+        v1.Post("/loginApp2", loginEndpoint)
+    }
+
+}
+
+
+func index(ctx iris.Context){
+    //回傳json型態
+    ctx.JSON(iris.Map{
+        "status":  "posted",
+    })
+}
+
+func loginEndpoint(ctx iris.Context){
+
+    message := ctx.PostValue("message")
+    nick := ctx.PostValueDefault("nick", "anonymous")
+
+    ctx.JSON(iris.Map{
+        "nick":    nick,
+        "message": message,
+        "status":  "posted",
+    })
 }
