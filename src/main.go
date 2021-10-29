@@ -66,6 +66,31 @@ func main(){
         v1.Post("/loginApp2", loginEndpoint)
     }
 
+    // 全域中介層(Global middleware) 使用 UseRouter。全域中介層可能指的是如 recover.New() 這種別人寫好會常用的套件
+    // recover.New -> 該方法是屬於中介層，從任何錯誤(any panics)和500錯誤上恢復
+    app.UseRouter(recover.New())
+
+    //Get("路徑名稱",中介層方法,執行作業)
+    app.Get("/benchmark", MyBenchLogger, benchEndpoint)
+
+
+    // 這個做法應該比較少用到，先建立路由群組，再共同使用一個中介層(如下AuthRequired() )
+    // 之後才到路徑名稱和對應功能
+    authorized := app.Party("/")
+    authorized.Use(AuthRequired())
+    {
+        authorized.Post("/login", benchEndpoint)
+        authorized.Post("/submit", benchEndpoint)
+        authorized.Post("/read", benchEndpoint)
+
+        // nested group
+        testing := authorized.Party("testing")
+        testing.Get("/analytics", benchEndpoint)
+    }
+
+
+    app.Listen(":8090")
+
 }
 
 
@@ -85,5 +110,19 @@ func loginEndpoint(ctx iris.Context){
         "nick":    nick,
         "message": message,
         "status":  "posted",
+    })
+}
+
+// 中介層方法
+func MyBenchLogger(ctx iris.Context){
+    fmt.Println("DemoMiddleware")
+
+    //執行下一個處理方法
+    ctx.Next()
+}
+
+func benchEndpoint(ctx iris.Context){
+    ctx.JSON(iris.Map{
+        "func": "benchEndpoint",
     })
 }
