@@ -1,0 +1,6 @@
+Iris 紀錄
+安裝指令，包含建立資料夾
+ mkdir myapp
+ cd myapp
+ go mod init myapp
+ go get github.com/kataras/iris/v12@master
